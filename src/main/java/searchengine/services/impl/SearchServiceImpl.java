@@ -5,12 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import searchengine.dto.RankDto;
-import searchengine.dto.responses.NotOkResponse;
 import searchengine.dto.responses.SearchDataResponse;
 import searchengine.dto.responses.SearchResponse;
+import searchengine.exception.SearchEngineException;
 import searchengine.model.IndexSearch;
 import searchengine.model.Lemma;
 import searchengine.model.SitePage;
@@ -39,10 +38,16 @@ public class SearchServiceImpl implements SearchService {
     private final double frequencyLimitProportion = 100;
 
     @Override
-    public ResponseEntity<Object> search(String query, String site, Integer offset, Integer limit) throws IOException {
-        if (checkIndexStatusNotIndexed(site)) {
-            return ResponseEntity.badRequest().body(new NotOkResponse("Индексация сайта для поиска не закончена"));
+    public Object search(String query, String site, Integer offset, Integer limit) throws IOException {
+        // Проверка из контроллера - перенесена сюда
+        if (query == null || query.isBlank()) {
+            throw SearchEngineException.emptySearchQuery();
         }
+
+        if (checkIndexStatusNotIndexed(site)) {
+            throw SearchEngineException.indexingNotCompleted();
+        }
+
         //
         SitePage siteTarget = siteRepository.getSitePageByUrl(site);
         Integer countPages = siteTarget != null ? pageRepository.getCountPages(siteTarget.getId()) : pageRepository.getCountPages(null);
@@ -60,7 +65,7 @@ public class SearchServiceImpl implements SearchService {
         });
 
         if (lemmasForSearch.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
+            return Collections.emptyList();
         }
 
         //Sorting lemmas by frequent
@@ -85,7 +90,7 @@ public class SearchServiceImpl implements SearchService {
 
         //Output if empty result
         if (indexesByLemmas.isEmpty()) {
-            return ResponseEntity.ok().body(new SearchResponse(true, 0, Collections.emptyList()));
+            return new SearchResponse(true, 0, Collections.emptyList());
         }
 
         //Rank calculation
@@ -153,7 +158,7 @@ public class SearchServiceImpl implements SearchService {
             }
         }
         result = result.stream().sorted(Comparator.comparingInt(SearchDataResponse::getWordsFound).reversed()).toList();
-        return ResponseEntity.ok(result);
+        return result;
     }
 
     private Boolean checkIndexStatusNotIndexed(String site) {

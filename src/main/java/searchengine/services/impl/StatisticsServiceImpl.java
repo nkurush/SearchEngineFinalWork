@@ -8,6 +8,7 @@ import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.dto.statistics.StatisticsData;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.dto.statistics.TotalStatistics;
+import searchengine.exception.SearchEngineException;
 import searchengine.model.SitePage;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         TotalStatistics total = new TotalStatistics();
         total.setSites(sites.getSites().size());
         total.setIndexing(true);
+        total.setPages(0);
+        total.setLemmas(0);
 
            List<DetailedStatisticsItem> detailed = new ArrayList<>();
         List<SitePage> sites = siteRepository.findAll();
@@ -47,13 +51,21 @@ public class StatisticsServiceImpl implements StatisticsService {
             DetailedStatisticsItem item = new DetailedStatisticsItem();
             item.setName(site.getName());
             item.setUrl(site.getUrl().toString());
-            int pages = pageRepository.findCountRecordBySiteId(sitePage.getId());
+            //int pages = pageRepository.findCountRecordBySiteId(sitePage.getId());
+            int pages = Optional
+                    .ofNullable(pageRepository.findCountRecordBySiteId(sitePage.getId()))
+                    .orElseThrow(() -> SearchEngineException.pageOutOfBounds("Нет страниц"));
             int lemmas = lemmaRepository.findCountRecordBySiteId(sitePage.getId());
             item.setPages(pages);
             item.setLemmas(lemmas);
             item.setStatus(String.valueOf(sitePage.getStatus()));
             item.setError(sitePage.getLastError());
-            item.setStatusTime(sitePage.getStatusTime().getTime());
+            if (sitePage.getStatusTime() != null) {
+                item.setStatusTime(sitePage.getStatusTime().getTime());
+            } else {
+                item.setStatusTime(System.currentTimeMillis()); // Или 0L
+            }
+            //item.setStatusTime(sitePage.getStatusTime().getTime());
             total.setPages(total.getPages() + pages);
             total.setLemmas(total.getLemmas() + lemmas);
             detailed.add(item);

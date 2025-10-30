@@ -1,13 +1,13 @@
 package searchengine.model;
 
 import com.sun.istack.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+        import lombok.Getter;
+        import lombok.NoArgsConstructor;
+        import lombok.Setter;
+        import org.hibernate.annotations.OnDelete;
+        import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
+        import javax.persistence.*;
 
 @Entity
 @Table(name = "index_search")
@@ -28,7 +28,7 @@ public class IndexSearch {
     @Column(name = "lemma_rank")
     @NotNull
     private int lemmaCount;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(/*cascade = CascadeType.REMOVE*/)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "page_id", insertable = false, updatable = false, nullable = false)
     private Page page;

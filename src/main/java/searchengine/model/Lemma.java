@@ -27,7 +27,7 @@ public class Lemma {
     @NotNull
     @Column(name = "site_id")
     private int siteId;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(/*cascade = CascadeType.REMOVE*/)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "site_id", insertable = false, updatable = false, nullable = false)
     private SitePage sitePage;

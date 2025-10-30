@@ -6,8 +6,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import searchengine.model.Page;
 
+import java.util.Optional;
+
 @Repository
 public interface PageRepository extends JpaRepository<Page, Integer> {
+   /* Optional<Page> findPageBySiteIdAndPath(String path,Integer siteId);
+
+    Integer findCountRecordBySiteId(Integer siteId);
+
+    @Query(value = "select count(p) from Page p where (:siteId is null or p.siteId = :siteId)")
+    Integer getCountPages(@Param("siteId") Integer siteId);*/
     @Query(value = "select * from page t where t.site_id = :siteId and t.path = :path limit 1", nativeQuery = true)
     Page findPageBySiteIdAndPath(@Param("path") String path, @Param("siteId") Integer siteId);
 

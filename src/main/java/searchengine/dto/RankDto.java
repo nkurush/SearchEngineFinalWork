@@ -11,7 +11,7 @@ import searchengine.model.Page;
 public class RankDto {
     private Integer pageId;
     private Page page;
-    private double absRelevance = 0.0;
-    private double relativeRelevance = 0.0;
-    private int maxLemmaRank = 0;
+    private Double absRelevance = 0.0;
+    private Double relativeRelevance = 0.0;
+    private Integer maxLemmaRank = 0;
 }

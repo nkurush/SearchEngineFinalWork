@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class SearchDataResponse {
     private String snippet;
     private Double relevance;
     @JsonIgnore
-    private int wordsFound;
+    private Integer wordsFound;
 }

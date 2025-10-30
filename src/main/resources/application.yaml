@@ -3,16 +3,21 @@ server:
 
 spring:
   datasource:
-    username: root
-    password: ertyu53f!@#dsfgfdg
-    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+    username: postgres
+    password: root
+    url: jdbc:postgresql://localhost:5433/search_engine
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: none
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
 
 logging:
   level:
@@ -26,6 +31,8 @@ indexing-settings:
       name: Skillbox
     - url: http://radiomv.ru/
       name: Radiomv
+    - url: http://www.playback.ru/
+      name: Playback
 
 
 connection-settings:

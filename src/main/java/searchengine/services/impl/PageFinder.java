@@ -16,10 +16,7 @@ import searchengine.services.PageIndexerService;
 import java.io.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,9 +47,16 @@ public class PageFinder extends RecursiveAction {
         this.pageIndexerService = pageIndexerService;
     }
 
+
+
     @Override
     protected void compute() {
+        log.debug("PageFinder.compute() для {} - флаг indexingProcessing: {}", page, indexingProcessing.get());
         if (resultForkJoinPoolIndexedPages.get(page) != null || !indexingProcessing.get()) {
+            log.warn("=== PageFinder.compute() EXIT - page: {}, причина: уже индексирован={}, флаг={} ===",
+                    page,
+                    resultForkJoinPoolIndexedPages.get(page) != null,
+                    indexingProcessing.get());
             return;
         }
         Page indexingPage = new Page();
@@ -138,6 +142,7 @@ public class PageFinder extends RecursiveAction {
         sitePage.setStatusTime(Timestamp.valueOf(LocalDateTime.now()));
         siteRepository.save(sitePage);
 
+
         Page pageToRefresh = pageRepository.findPageBySiteIdAndPath(page, sitePage.getId());
         if (pageToRefresh != null) {
             pageToRefresh.setCode(indexingPage.getCode());
@@ -148,8 +153,9 @@ public class PageFinder extends RecursiveAction {
             pageRepository.save(indexingPage);
             pageIndexerService.refreshIndex(indexingPage.getContent(), indexingPage);
         }
-    }
 
+
+    }
     void errorHandling(Exception ex, Page indexingPage) {
         String message = ex.toString();
         int errorCode;
@@ -175,5 +181,7 @@ public class PageFinder extends RecursiveAction {
             errorCode = -1;
         }
         indexingPage.setCode(errorCode);
+      // indexingPage.setContent("");
+
     }
 }

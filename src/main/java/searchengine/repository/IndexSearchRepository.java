@@ -9,9 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.IndexSearch;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IndexSearchRepository extends JpaRepository<IndexSearch, Integer> {
+    /*@Query(value = "select i from IndexSearch i where i.pageId = :pageId and i.lemmaId = :lemmaId")
+    IndexSearch indexSearchExist(Integer pageId, Integer lemmaId);
+
+    List<IndexSearch> findIndexesByLemma(Integer lemmaId);
+
+    List<IndexSearch> findAllByPageId(Integer pageId);
+
+    void deleteAllByPageId(Integer pageId);
+    // Было: @Modifying @Query(value = "delete from IndexSearch i where i.pageId = :pageId")*/
     @Query(value = "select i from IndexSearch i where i.pageId = :pageId and i.lemmaId = :lemmaId")
     IndexSearch indexSearchExist(@Param("pageId") Integer pageId, @Param("lemmaId") Integer lemmaId);
 

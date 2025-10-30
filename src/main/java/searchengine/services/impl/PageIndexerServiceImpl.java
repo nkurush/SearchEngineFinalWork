@@ -48,7 +48,7 @@ public class PageIndexerServiceImpl implements PageIndexerService {
             refreshLemma(refreshPage);
             //удаление индекса
             indexSearchRepository.deleteAllByPageId(refreshPage.getId());
-            //обновление лемм и индесов у обнолвенной страницы
+            //обновление лемм и индексов у обновленной страницы
             lemmas.entrySet().parallelStream().forEach(entry -> saveLemma(entry.getKey(), entry.getValue(), refreshPage));
             log.debug("Обновление индекса страницы " + (System.currentTimeMillis() - start) + " lemmas:" + lemmas.size());
         } catch (IOException e) {
