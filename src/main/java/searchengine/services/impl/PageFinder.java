@@ -96,7 +96,9 @@ public class PageFinder extends RecursiveAction {
         resultForkJoinPoolIndexedPages.putIfAbsent(indexingPage.getPath(), indexingPage);
         SitePage sitePage = siteRepository.findById(siteDomain.getId()).orElseThrow();
         sitePage.setStatusTime(Timestamp.valueOf(LocalDateTime.now()));
+
         siteRepository.save(sitePage);
+
         pageRepository.save(indexingPage);
         pageIndexerService.indexHtml(indexingPage.getContent(), indexingPage);
         List<PageFinder> indexingPagesTasks = new ArrayList<>();
@@ -181,7 +183,7 @@ public class PageFinder extends RecursiveAction {
             errorCode = -1;
         }
         indexingPage.setCode(errorCode);
-      // indexingPage.setContent("");
+        indexingPage.setContent("");
 
     }
 }
