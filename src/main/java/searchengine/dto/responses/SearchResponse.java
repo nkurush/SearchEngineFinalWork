@@ -1,16 +1,14 @@
 package searchengine.dto.responses;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
-
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class SearchResponse {
     private Boolean result;
     private Integer count;
     private List<SearchDataResponse> data;
+
 }

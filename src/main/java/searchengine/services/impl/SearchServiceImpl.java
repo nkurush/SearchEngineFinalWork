@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import searchengine.dto.RankDto;
+import searchengine.dto.responses.NotOkResponse;
 import searchengine.dto.responses.SearchDataResponse;
 import searchengine.dto.responses.SearchResponse;
 import searchengine.exception.SearchEngineException;
@@ -65,7 +67,8 @@ public class SearchServiceImpl implements SearchService {
         });
 
         if (lemmasForSearch.isEmpty()) {
-            return Collections.emptyList();
+         //   return Collections.emptyList();
+            return new SearchResponse(true, 0, Collections.emptyList());
         }
 
         //Sorting lemmas by frequent
@@ -158,7 +161,9 @@ public class SearchServiceImpl implements SearchService {
             }
         }
         result = result.stream().sorted(Comparator.comparingInt(SearchDataResponse::getWordsFound).reversed()).toList();
-        return result;
+        //return result;
+        return new SearchResponse(true, sortedSearchDataResponse.size(), result);
+
     }
 
     private Boolean checkIndexStatusNotIndexed(String site) {
